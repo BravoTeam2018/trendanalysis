@@ -19,12 +19,14 @@ public class AlertHandler implements MessageListener{
 
 
     @Autowired
-    public AlertHandler(AlertSubscriber sub, AlertRepository repo) {
+    public AlertHandler(AlertSubscriber sub, AlertRepository repo) throws IOException {
 
         this.sub=sub;
         this.repo=repo;
 
         this.sub.setMessageListener(this);
+
+
     }
 
     @Override

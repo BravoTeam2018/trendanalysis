@@ -26,19 +26,15 @@ public class AlertSubscriber implements MqttCallback {
         this.config = config;
     }
 
-    @Scheduled(fixedDelay = 3000L)
-    public void ensureConnected() {
 
-        if( ! mqttClient.isConnected() ) {
-            try {
-                this.connect();
-            } catch (MqttException e) {
-                LOGGER.error("Unable to connect to host {}, getting an exception {}",this.getConnectionString(),e);
-            }
-        }
+    public boolean isConnected() {
+        if(mqttClient==null)
+            return false;
+
+        return mqttClient.isConnected();
     }
 
-    private void connect() throws MqttException {
+    public void connect() throws MqttException {
 
         this.mqttClient = new MqttClient(config.getConnectionString(), "client1");
         MqttConnectOptions connOpts = new MqttConnectOptions();

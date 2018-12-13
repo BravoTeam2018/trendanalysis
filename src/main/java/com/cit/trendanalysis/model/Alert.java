@@ -1,9 +1,11 @@
 package com.cit.trendanalysis.model;
 
-import java.util.UUID;
+
 
 @lombok.Data
 @lombok.Builder
+@lombok.AllArgsConstructor
+@lombok.NoArgsConstructor
 public class Alert {
     private String id;
     private String severity;

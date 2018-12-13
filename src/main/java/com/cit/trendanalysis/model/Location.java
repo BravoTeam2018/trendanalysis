@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @lombok.Data
 @lombok.Builder
+@lombok.AllArgsConstructor
+@lombok.NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Location {
 
