@@ -14,6 +14,9 @@
 #### Trend DashBoard
 ![Dashboard](https://github.com/BravoTeam2018/DetectCloneRFID/blob/master/docs/dashboard.png)
 
+#### Tracking Grid with Filter 
+![Tracking Filter](https://github.com/BravoTeam2018/DetectCloneRFID/blob/master/docs/FilteredTrackingView.png)
+
 ### Building from source
 
 ### Prerequisites 
