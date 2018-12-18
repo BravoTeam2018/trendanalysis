@@ -13,9 +13,6 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,47 +34,58 @@ public class AlertRepository {
     }
 
 
+    private XContentBuilder buildRequest(Alert alert) throws IOException {
 
+        XContentBuilder builder = null;
 
+        builder = XContentFactory.jsonBuilder();
+
+        builder.startObject()
+            .field("severity", alert.getSeverity())
+            .field("title", alert.getTitle())
+            .field("description", alert.getDescription())
+
+            .startObject("currentEvent")
+                .field("timestamp", new Date(alert.getCurrentEvent().getTimestamp()))
+                .field("cardId", alert.getCurrentEvent().getCardId())
+                .field("panelId", alert.getCurrentEvent().getPanelId())
+                .startObject("location")
+                    .field("coordinates", new GeoPoint(alert.getCurrentEvent().getLocation().getCoordinates().getLatitude(),
+                        alert.getCurrentEvent().getLocation().getCoordinates().getLongitude()))
+                    .field("altitude", alert.getCurrentEvent().getLocation().getAltitude())
+                    .field("relativeLocation", alert.getCurrentEvent().getLocation().getRelativeLocation())
+                .endObject()
+                .field("accessAllowed", alert.getCurrentEvent().isAccessAllowed())
+            .endObject();
+
+            if (alert.getPreviousEvent()!=null) {
+
+                builder.startObject("previousEvent")
+                        .field("timestamp", new Date(alert.getPreviousEvent().getTimestamp()))
+                        .field("cardId", alert.getPreviousEvent().getCardId())
+                        .field("panelId", alert.getPreviousEvent().getPanelId())
+                        .startObject("location")
+                        .field("coordinates", new GeoPoint(alert.getPreviousEvent().getLocation().getCoordinates().getLatitude(),
+                                alert.getPreviousEvent().getLocation().getCoordinates().getLongitude()))
+                        .field("altitude", alert.getPreviousEvent().getLocation().getAltitude())
+                        .field("relativeLocation", alert.getPreviousEvent().getLocation().getRelativeLocation())
+                        .endObject()
+                        .field("accessAllowed", alert.getPreviousEvent().isAccessAllowed())
+                        .endObject();
+            }
+
+        builder.endObject();
+
+        return builder;
+
+    }
 
 
     public void insertAlert(Alert alert) throws IOException {
 
         alert.setId(UUID.randomUUID().toString());
 
-
-
-
-        XContentBuilder builder = XContentFactory.jsonBuilder()
-                .startObject()
-                    .field("severity", alert.getSeverity())
-                    .field("title", alert.getTitle())
-                    .field("description", alert.getDescription())
-                    .startObject("currentEvent")
-                        .field("timestamp", new Date(alert.getCurrentEvent().getTimestamp()))
-                        .field("cardId", alert.getCurrentEvent().getCardId())
-                        .field("panelId", alert.getCurrentEvent().getPanelId())
-                        .startObject("location")
-                           .field("coordinates", new GeoPoint(alert.getCurrentEvent().getLocation().getCoordinates().getLatitude(),
-                                   alert.getCurrentEvent().getLocation().getCoordinates().getLongitude()))
-                           .field("altitude", alert.getCurrentEvent().getLocation().getAltitude())
-                           .field("relativeLocation", alert.getCurrentEvent().getLocation().getRelativeLocation())
-                        .endObject()
-                        .field("accessAllowed", alert.getCurrentEvent().isAccessAllowed())
-                    .endObject()
-                    .startObject("previousEvent")
-                        .field("timestamp", new Date(alert.getPreviousEvent().getTimestamp()))
-                        .field("cardId", alert.getPreviousEvent().getCardId())
-                        .field("panelId", alert.getPreviousEvent().getPanelId())
-                        .startObject("location")
-                            .field("coordinates", new GeoPoint(alert.getPreviousEvent().getLocation().getCoordinates().getLatitude(),
-                                    alert.getPreviousEvent().getLocation().getCoordinates().getLongitude()))
-                            .field("altitude", alert.getPreviousEvent().getLocation().getAltitude())
-                            .field("relativeLocation", alert.getPreviousEvent().getLocation().getRelativeLocation())
-                        .endObject()
-                        .field("accessAllowed", alert.getPreviousEvent().isAccessAllowed())
-                    .endObject()
-                .endObject();
+        XContentBuilder builder = buildRequest(alert);
 
         try {
 
@@ -94,22 +102,3 @@ public class AlertRepository {
         }
     }
 }
-/*
-
-
-PUT alertdata/_mapping/alerts
-{
-  "properties": {
-    "timestamp": {
-      "type" : "date",
-      "format" : "epoch_millis"
-    },
-    "coordinates" : {
-      "type" : "geo_point"
-    }
-
-  }
-}
-
-*/
-
